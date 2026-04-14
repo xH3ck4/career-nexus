@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CyberCounseling Karir SMK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="ambient" aria-hidden="true">
+    <canvas id="particleCanvas" class="particle-canvas"></canvas>
+    <div class="orb orb--1"></div>
+    <div class="orb orb--2"></div>
+    <div class="orb orb--3"></div>
+    <div class="grid-floor"></div>
+  </div>
+  <div class="background-glow"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <main class="page">
+    <header class="hero">
+      <p class="badge badge--pulse">CyberCounseling Interaktif</p>
+      <h1><span class="hero-title">Rekomendasi Peminatan Karir dan Bakat</span> <span class="hero-title hero-title--accent">untuk Siswa SMK</span></h1>
+      <p class="subtitle">
+        Isi data diri di form kiri, lalu lihat peta jaringan karir di sisi kanan. Node bisa digeser,
+        benang antar karir menunjukkan keterkaitan jenjang. Arahkan kursor untuk detail profesi.
+      </p>
+      <ol class="steps" aria-label="Alur singkat">
+        <li class="steps__item steps__item--active"><span class="steps__num">1</span> Data siswa</li>
+        <li class="steps__item"><span class="steps__num">2</span> Analisis</li>
+        <li class="steps__item"><span class="steps__num">3</span> Peta karir</li>
+      </ol>
+    </header>
+
+    <aside class="mascot-dock" aria-hidden="true">
+      <div class="cartoon-mascot" id="cartoonMascot">
+        <div class="mascot-antenna"></div>
+        <div class="mascot-face">
+          <div class="eye eye-left"><span class="pupil"></span></div>
+          <div class="eye eye-right"><span class="pupil"></span></div>
+          <div class="mouth"></div>
+          <div class="blush blush-left"></div>
+          <div class="blush blush-right"></div>
+        </div>
+        <div class="speech" id="mascotSpeech">Halo! Isi form yuk, nanti aku bantu jelaskan jalur karirmu ✨</div>
+      </div>
+    </aside>
+
+    <section class="content-grid">
+      <article class="card form-card">
+        <h2>Form Data Siswa</h2>
+        <form id="studentForm" novalidate>
+          <label class="field">
+            <span class="field__label">Nama</span>
+            <input type="text" id="name" name="name" placeholder="Contoh: Nabila Putri" autocomplete="name" required />
+          </label>
+          <label class="field">
+            <span class="field__label">Kelas</span>
+            <input type="text" id="classroom" name="classroom" placeholder="Contoh: XII RPL 2" required />
+          </label>
+          <label class="field">
+            <span class="field__label">Jurusan SMK</span>
+            <select id="major" name="major" required>
+              <option value="">-- Pilih jurusan --</option>
+              <option value="RPL">Rekayasa Perangkat Lunak (RPL)</option>
+              <option value="TKJ">Teknik Komputer dan Jaringan (TKJ)</option>
+              <option value="DKV">Desain Komunikasi Visual (DKV)</option>
+              <option value="AKL">Akuntansi dan Keuangan Lembaga (AKL)</option>
+              <option value="BDP">Bisnis Daring dan Pemasaran (BDP)</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field__label">Hobi atau minat utama</span>
+            <input type="text" id="hobby" name="hobby" placeholder="Contoh: desain UI, coding, jaringan…" required />
+          </label>
+          <button type="submit" class="btn-submit" id="submitBtn">
+            <span class="btn-submit__shine" aria-hidden="true"></span>
+            <span class="btn-submit__text">Lihat Rekomendasi Karir</span>
+            <span class="btn-submit__loader" aria-hidden="true"></span>
+          </button>
+        </form>
+
+        <div id="result" class="result hidden" role="region" aria-live="polite" aria-labelledby="resultHeading">
+          <h3 id="resultHeading">Hasil Rekomendasi</h3>
+          <p id="resultSummary"></p>
+          <ul id="careerList" class="career-list"></ul>
+        </div>
+      </article>
+
+      <article class="card graph-card experience-card" id="graphCard">
+        <div class="graph-top">
+          <div class="graph-top__row">
+            <h2>Career Nexus Interaktif</h2>
+            <div class="graph-actions">
+              <button type="button" class="btn-ghost" id="resetNodes" title="Kembalikan posisi node ke awal">Reset posisi</button>
+              <button type="button" class="btn-ghost" id="focusRecommended" title="Sorot node yang direkomendasikan">Sorot rekomendasi</button>
+            </div>
+          </div>
+          <p class="graph-hint">
+            <span class="graph-hint__icon" aria-hidden="true">◇</span>
+            Drag area kosong untuk geser peta · Scroll mouse untuk zoom · Tarik lingkaran karir untuk atur posisi · Node rekomendasi dan benang pusat akan menyala.
+          </p>
+        </div>
+
+        <div class="graph-wrapper" id="graphStage">
+          <div class="center-title" aria-hidden="true">
+            <span class="center-title__main">PETA KARIR</span>
+            <span class="center-title__sub">CyberCounseling SMK</span>
+          </div>
+          <div class="floating-friends" aria-hidden="true">
+            <div class="friend friend-star">⭐</div>
+            <div class="friend friend-rocket">🚀</div>
+            <div class="friend friend-spark">💡</div>
+          </div>
+          <svg id="careerGraph" viewBox="0 0 900 560" role="img" aria-label="Peta jaringan karir"></svg>
+          <div id="tooltip" class="tooltip hidden"></div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
