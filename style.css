@@ -2403,6 +2403,29 @@ select:focus {
     min-width: 160px;
   }
 
+  .graph-card--fullscreen .graph-main {
+    grid-template-columns: 1fr;
+    height: calc(100vh - 5rem);
+  }
+
+  .graph-card--fullscreen .graph-wrapper {
+    height: 60vh;
+  }
+
+  .graph-card--fullscreen .graph-info {
+    max-height: 32vh;
+    order: 2;
+  }
+
+  .mind-card--fullscreen {
+    inset: 0;
+  }
+
+  .mind-card--fullscreen .mind-stage-wrapper {
+    grid-template-columns: 1fr;
+    height: calc(100vh - 5rem);
+  }
+
   .info-layout {
     grid-template-columns: 1fr;
   }

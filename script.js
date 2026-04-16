@@ -617,6 +617,10 @@ function bindNodeEvents(group, node) {
     group.classList.add("highlight");
     highlightConnections(node.id);
     showTooltip(event, node);
+    updateInfoPanel(node);
+    if (graphInfoPanel && window.innerWidth <= 720) {
+      graphInfoPanel.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "nearest" });
+    }
   });
 
   if (!isTouchDevice) {
