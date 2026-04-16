@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Info Karir Detail - Career Nexus</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="ambient" aria-hidden="true">
+    <canvas id="particleCanvas" class="particle-canvas"></canvas>
+    <div class="orb orb--1"></div>
+    <div class="orb orb--2"></div>
+    <div class="orb orb--3"></div>
+    <div class="grid-floor"></div>
+  </div>
+  <div class="background-glow"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <header class="app-header">
+    <div class="app-header__inner">
+      <div class="app-header__brand">
+        <span class="app-header__logo-dot"></span>
+        <span class="app-header__title">Career Nexus</span>
+        <span class="app-header__subtitle">CyberCounseling SMK</span>
+      </div>
+      <nav class="app-header__nav" aria-label="Navigasi utama">
+        <a href="index.html" class="app-header__link">Peta Karir</a>
+        <a href="mind-planning.html" class="app-header__link">Mind Planning</a>
+        <a href="career-info.html" class="app-header__link app-header__link--active">Info Karir</a>
+        <a href="career-quiz.html" class="app-header__link">Quiz Karir</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page info-page">
+    <header class="hero">
+      <p class="badge badge--pulse">Info Karir Detail</p>
+      <h1>
+        <span class="hero-title">Kenali Karir Impianmu</span>
+        <span class="hero-title hero-title--accent">Lewat Video & Tips Praktis</span>
+      </h1>
+      <p class="subtitle">
+        Pilih salah satu karir di sisi kiri, lalu lihat <strong>video singkat</strong>, <strong>penjelasan</strong>,
+        <strong>tips & trik</strong>, serta <strong>jenjang karir</strong> di panel kanan.
+      </p>
+    </header>
+
+    <section class="info-layout">
+      <aside class="card info-list-card">
+        <h2>Daftar Karir</h2>
+        <div class="info-search">
+          <input type="text" id="infoSearchInput" placeholder="Cari karir, contoh: frontend, akuntansi…" />
+        </div>
+        <ul id="careerInfoList" class="info-list" aria-label="Daftar karir"></ul>
+      </aside>
+
+      <article class="card info-detail-card">
+        <div class="info-detail-header">
+          <div>
+            <h2 id="infoTitle">Pilih karir terlebih dahulu</h2>
+            <p id="infoSubtitle" class="info-detail-subtitle">Klik salah satu karir di sisi kiri untuk melihat detail lengkapnya.</p>
+          </div>
+          <button type="button" class="btn-outline btn-outline--ghost info-random-btn" id="infoRandomBtn">Acak Karir</button>
+        </div>
+
+        <div class="info-media-wrapper">
+          <div class="info-media" id="infoMedia">
+            <div class="info-media-pulse">
+              <div class="info-media-circle info-media-circle--outer"></div>
+              <div class="info-media-circle info-media-circle--inner"></div>
+              <button type="button" class="info-media-play" aria-label="Putar video simulasi">
+                ▶
+              </button>
+            </div>
+            <p class="info-media-caption" id="infoMediaCaption">Video simulasi singkat akan muncul di sini sebagai gambaran suasana kerja.</p>
+          </div>
+
+          <div class="info-tags" id="infoTags"></div>
+        </div>
+
+        <div class="info-detail-grid">
+          <div class="info-section">
+            <h3>Ringkasan Karir</h3>
+            <p id="infoDescription"></p>
+          </div>
+
+          <div class="info-section">
+            <h3>Tips & Trik</h3>
+            <ul id="infoTips" class="info-tips"></ul>
+          </div>
+        </div>
+
+        <div class="info-roadmap">
+          <h3>Jenjang Karir</h3>
+          <div id="infoRoadmap" class="info-roadmap-steps"></div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <div class="app-footer__tabs app-footer__tabs--four" aria-label="Navigasi bawah">
+      <a href="index.html" class="app-footer__tab">
+        <span class="app-footer__icon">🌐</span>
+        <span class="app-footer__label">Peta Karir</span>
+      </a>
+      <a href="mind-planning.html" class="app-footer__tab">
+        <span class="app-footer__icon">🧠</span>
+        <span class="app-footer__label">Mind Planning</span>
+      </a>
+      <a href="career-info.html" class="app-footer__tab app-footer__tab--active">
+        <span class="app-footer__icon">📺</span>
+        <span class="app-footer__label">Info Karir</span>
+      </a>
+      <a href="career-quiz.html" class="app-footer__tab app-footer__tab--ghost">
+        <span class="app-footer__icon">🎯</span>
+        <span class="app-footer__label">Quiz Karir</span>
+      </a>
+    </div>
+  </footer>
+
+  <script src="career-info.js"></script>
+</body>
+</html>
+

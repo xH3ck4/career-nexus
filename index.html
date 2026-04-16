@@ -20,6 +20,22 @@
   <div class="background-glow"></div>
   <div class="scanlines" aria-hidden="true"></div>
 
+  <header class="app-header">
+    <div class="app-header__inner">
+      <div class="app-header__brand">
+        <span class="app-header__logo-dot"></span>
+        <span class="app-header__title">Career Nexus</span>
+        <span class="app-header__subtitle">CyberCounseling SMK</span>
+      </div>
+      <nav class="app-header__nav" aria-label="Navigasi utama">
+        <a href="index.html" class="app-header__link app-header__link--active">Peta Karir</a>
+        <a href="mind-planning.html" class="app-header__link">Mind Planning</a>
+        <a href="career-info.html" class="app-header__link">Info Karir</a>
+        <a href="career-quiz.html" class="app-header__link">Quiz Karir</a>
+      </nav>
+    </div>
+  </header>
+
   <main class="page">
     <header class="hero">
       <p class="badge badge--pulse">CyberCounseling Interaktif</p>
@@ -28,6 +44,9 @@
         Isi data diri di form kiri, lalu lihat peta jaringan karir di sisi kanan. Node bisa digeser,
         benang antar karir menunjukkan keterkaitan jenjang. Arahkan kursor untuk detail profesi.
       </p>
+      <div class="mind-hero-actions">
+        <a href="mind-planning.html" class="btn-outline">Buka Mind Planning Jalur Karir →</a>
+      </div>
       <ol class="steps" aria-label="Alur singkat">
         <li class="steps__item steps__item--active"><span class="steps__num">1</span> Data siswa</li>
         <li class="steps__item"><span class="steps__num">2</span> Analisis</li>
@@ -97,6 +116,9 @@
             <div class="graph-actions">
               <button type="button" class="btn-ghost" id="resetNodes" title="Kembalikan posisi node ke awal">Reset posisi</button>
               <button type="button" class="btn-ghost" id="focusRecommended" title="Sorot node yang direkomendasikan">Sorot rekomendasi</button>
+              <button type="button" class="btn-ghost btn-ghost--icon" id="toggleFullscreen" title="Perbesar peta karir ke layar penuh">
+                ⛶ Layar penuh
+              </button>
             </div>
           </div>
           <p class="graph-hint">
@@ -105,22 +127,67 @@
           </p>
         </div>
 
-        <div class="graph-wrapper" id="graphStage">
-          <div class="center-title" aria-hidden="true">
-            <span class="center-title__main">PETA KARIR</span>
-            <span class="center-title__sub">CyberCounseling SMK</span>
+        <div class="graph-analyze-overlay hidden" id="graphAnalyzeOverlay" aria-live="polite" aria-label="Sistem sedang menganalisis data untuk menemukan rekomendasi karir">
+          <div class="graph-analyze-overlay__inner">
+            <div class="graph-analyze-orbit">
+              <span class="graph-analyze-orbit__dot graph-analyze-orbit__dot--1"></span>
+              <span class="graph-analyze-orbit__dot graph-analyze-orbit__dot--2"></span>
+              <span class="graph-analyze-orbit__dot graph-analyze-orbit__dot--3"></span>
+            </div>
+            <div class="graph-analyze-text">
+              <p class="graph-analyze-text__title">Menganalisis minat dan jalur karir…</p>
+              <p class="graph-analyze-text__hint">Career Nexus sedang mencari node karir yang paling nyambung dengan jurusan dan hobimu.</p>
+            </div>
           </div>
-          <div class="floating-friends" aria-hidden="true">
-            <div class="friend friend-star">⭐</div>
-            <div class="friend friend-rocket">🚀</div>
-            <div class="friend friend-spark">💡</div>
+        </div>
+
+        <div class="graph-main">
+          <div class="graph-wrapper" id="graphStage">
+            <div class="center-title" aria-hidden="true">
+              <span class="center-title__main">PETA KARIR</span>
+              <span class="center-title__sub">CyberCounseling SMK</span>
+            </div>
+            <div class="floating-friends" aria-hidden="true">
+              <div class="friend friend-star">⭐</div>
+              <div class="friend friend-rocket">🚀</div>
+              <div class="friend friend-spark">💡</div>
+            </div>
+            <svg id="careerGraph" viewBox="0 0 900 560" role="img" aria-label="Peta jaringan karir"></svg>
+            <div id="tooltip" class="tooltip hidden"></div>
           </div>
-          <svg id="careerGraph" viewBox="0 0 900 560" role="img" aria-label="Peta jaringan karir"></svg>
-          <div id="tooltip" class="tooltip hidden"></div>
+
+          <aside class="graph-info" id="graphInfoPanel" aria-live="polite">
+            <h3 class="graph-info__title">Detail Karir</h3>
+            <p class="graph-info__placeholder" id="graphInfoPlaceholder">
+              Arahkan kursor ke node karir di peta untuk melihat detail profesi tanpa menutupi tampilan.
+            </p>
+            <div class="graph-info__body" id="graphInfoContent"></div>
+          </aside>
         </div>
       </article>
     </section>
   </main>
+
+  <footer class="app-footer">
+    <div class="app-footer__tabs app-footer__tabs--four" aria-label="Navigasi bawah">
+      <a href="index.html" class="app-footer__tab app-footer__tab--active">
+        <span class="app-footer__icon">🌐</span>
+        <span class="app-footer__label">Peta Karir</span>
+      </a>
+      <a href="mind-planning.html" class="app-footer__tab">
+        <span class="app-footer__icon">🧠</span>
+        <span class="app-footer__label">Mind Planning</span>
+      </a>
+      <a href="career-info.html" class="app-footer__tab">
+        <span class="app-footer__icon">📺</span>
+        <span class="app-footer__label">Info Karir</span>
+      </a>
+      <a href="career-quiz.html" class="app-footer__tab app-footer__tab--ghost">
+        <span class="app-footer__icon">🎯</span>
+        <span class="app-footer__label">Quiz Karir</span>
+      </a>
+    </div>
+  </footer>
 
   <script src="script.js"></script>
 </body>

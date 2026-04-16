@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz Karir Interaktif - Career Nexus</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="ambient" aria-hidden="true">
+    <canvas id="particleCanvas" class="particle-canvas"></canvas>
+    <div class="orb orb--1"></div>
+    <div class="orb orb--2"></div>
+    <div class="orb orb--3"></div>
+    <div class="grid-floor"></div>
+  </div>
+  <div class="background-glow"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <header class="app-header">
+    <div class="app-header__inner">
+      <div class="app-header__brand">
+        <span class="app-header__logo-dot"></span>
+        <span class="app-header__title">Career Nexus</span>
+        <span class="app-header__subtitle">CyberCounseling SMK</span>
+      </div>
+      <nav class="app-header__nav" aria-label="Navigasi utama">
+        <a href="index.html" class="app-header__link">Peta Karir</a>
+        <a href="mind-planning.html" class="app-header__link">Mind Planning</a>
+        <a href="career-info.html" class="app-header__link">Info Karir</a>
+        <a href="career-quiz.html" class="app-header__link app-header__link--active">Quiz Karir</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page quiz-page">
+    <header class="hero">
+      <p class="badge badge--pulse">Quiz Karir Interaktif</p>
+      <h1>
+        <span class="hero-title">Tes Minat & Gaya Kerja</span>
+        <span class="hero-title hero-title--accent">Lihat Skor & Rekomendasi</span>
+      </h1>
+      <p class="subtitle">
+        Jawab beberapa pertanyaan pendek. Di akhir, kamu akan melihat <strong>skor kecocokan</strong> dan
+        <strong>jalur karir</strong> yang paling dekat dengan pola jawabanmu.
+      </p>
+    </header>
+
+    <section class="quiz-layout">
+      <article class="card quiz-card">
+        <div class="quiz-progress">
+          <div class="quiz-progress__bar">
+            <div class="quiz-progress__fill" id="quizProgressFill"></div>
+          </div>
+          <span class="quiz-progress__label" id="quizProgressLabel">Pertanyaan 1 dari 6</span>
+        </div>
+
+        <div class="quiz-question" id="quizQuestionText"></div>
+        <div class="quiz-options" id="quizOptions"></div>
+
+        <div class="quiz-actions">
+          <button type="button" class="btn-outline btn-outline--ghost" id="quizPrevBtn">Sebelumnya</button>
+          <button type="button" class="btn-outline" id="quizNextBtn">Berikutnya</button>
+        </div>
+      </article>
+
+      <aside class="quiz-result card" id="quizResultCard" aria-live="polite">
+        <h2>Ringkasan Skor</h2>
+        <div class="quiz-score-circle">
+          <div class="quiz-score-circle__inner" id="quizScoreValue">0</div>
+        </div>
+        <p class="quiz-result-text" id="quizResultText">Jawabanmu akan dianalisis setelah kamu menyelesaikan semua pertanyaan.</p>
+        <ul class="quiz-result-tags" id="quizResultTags"></ul>
+      </aside>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <div class="app-footer__tabs app-footer__tabs--four" aria-label="Navigasi bawah">
+      <a href="index.html" class="app-footer__tab">
+        <span class="app-footer__icon">🌐</span>
+        <span class="app-footer__label">Peta Karir</span>
+      </a>
+      <a href="mind-planning.html" class="app-footer__tab">
+        <span class="app-footer__icon">🧠</span>
+        <span class="app-footer__label">Mind Planning</span>
+      </a>
+      <a href="career-info.html" class="app-footer__tab">
+        <span class="app-footer__icon">📺</span>
+        <span class="app-footer__label">Info Karir</span>
+      </a>
+      <a href="career-quiz.html" class="app-footer__tab app-footer__tab--active">
+        <span class="app-footer__icon">🎯</span>
+        <span class="app-footer__label">Quiz Karir</span>
+      </a>
+    </div>
+  </footer>
+
+  <script src="career-quiz.js"></script>
+</body>
+</html>
+

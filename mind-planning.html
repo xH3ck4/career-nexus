@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mind Planning Karir - CyberCounseling SMK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="ambient" aria-hidden="true">
+    <canvas id="particleCanvas" class="particle-canvas"></canvas>
+    <div class="orb orb--1"></div>
+    <div class="orb orb--2"></div>
+    <div class="orb orb--3"></div>
+    <div class="grid-floor"></div>
+  </div>
+  <div class="background-glow"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <header class="app-header">
+    <div class="app-header__inner">
+      <div class="app-header__brand">
+        <span class="app-header__logo-dot"></span>
+        <span class="app-header__title">Career Nexus</span>
+        <span class="app-header__subtitle">CyberCounseling SMK</span>
+      </div>
+      <nav class="app-header__nav" aria-label="Navigasi utama">
+        <a href="index.html" class="app-header__link">Peta Karir</a>
+        <a href="mind-planning.html" class="app-header__link app-header__link--active">Mind Planning</a>
+        <a href="career-info.html" class="app-header__link">Info Karir</a>
+        <a href="career-quiz.html" class="app-header__link">Quiz Karir</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page mind-page">
+    <header class="hero mind-hero">
+      <p class="badge badge--pulse">Mind Planning Karir</p>
+      <h1>
+        <span class="hero-title">Rancang Langkah Menuju</span>
+        <span class="hero-title hero-title--accent">Karir Impianmu</span>
+      </h1>
+      <p class="subtitle">
+        Susun alur dari <strong>lulus SMK</strong> sampai <strong>karir tujuan</strong>. Geser kartu, ikuti panah,
+        lalu catat rencana aksi kecil yang bisa kamu mulai hari ini.
+      </p>
+      <div class="mind-hero-actions">
+        <a href="index.html" class="btn-outline">← Kembali ke Peta Karir</a>
+        <button type="button" class="btn-outline btn-outline--ghost" id="resetMindMap">Reset posisi mind map</button>
+      </div>
+    </header>
+
+    <section class="mind-layout">
+      <article class="card mind-card">
+        <div class="mind-toolbar">
+          <div class="mind-toolbar__group">
+            <span class="mind-toolbar__label">Template jalur</span>
+            <select id="mindTemplateSelect">
+              <option value="webdev">Web Developer / RPL</option>
+              <option value="design">Desain & UI/UX</option>
+              <option value="network">Jaringan & Cybersecurity</option>
+              <option value="finance">Akuntansi & Keuangan</option>
+            </select>
+          </div>
+          <div class="mind-toolbar__group mind-toolbar__group--hint">
+            <span>Tips: klik kartu untuk menandai langkah yang sedang kamu fokuskan.</span>
+          </div>
+          <div class="mind-toolbar__group">
+            <button type="button" class="btn-outline btn-outline--ghost" id="mindFullscreenToggle">⛶ Layar penuh mind map</button>
+          </div>
+        </div>
+
+        <div class="mind-stage-wrapper">
+          <div class="mind-stage" id="mindStage">
+            <div class="mind-stage-inner" id="mindStageInner">
+              <svg id="mindLines" class="mind-lines" viewBox="0 0 1600 700" aria-hidden="true" preserveAspectRatio="xMinYMin slice"></svg>
+              <div class="mind-nodes-layer" id="mindNodesLayer" aria-label="Mind map planning karir"></div>
+            </div>
+          </div>
+
+          <aside class="mind-notes" aria-live="polite">
+            <h2 class="mind-notes__title">Catatan Aksi Kecil</h2>
+            <p class="mind-notes__hint">
+              Pilih salah satu kartu langkah, lalu tuliskan 2–3 aksi konkret yang bisa kamu mulai dalam 1–4 minggu ke depan.
+            </p>
+            <div class="mind-notes__current" id="mindCurrentStep">Belum ada langkah yang dipilih.</div>
+            <textarea id="mindNotesInput" class="mind-notes__input" placeholder="- Contoh: Cari info beasiswa kampus negeri&#10;- Contoh: Tanya guru BK tentang jurusan yang cocok"></textarea>
+            <p class="mind-notes__small">Catatan ini hanya tersimpan di browser perangkatmu.</p>
+          </aside>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <div class="app-footer__tabs app-footer__tabs--four" aria-label="Navigasi bawah">
+      <a href="index.html" class="app-footer__tab">
+        <span class="app-footer__icon">🌐</span>
+        <span class="app-footer__label">Peta Karir</span>
+      </a>
+      <a href="mind-planning.html" class="app-footer__tab app-footer__tab--active">
+        <span class="app-footer__icon">🧠</span>
+        <span class="app-footer__label">Mind Planning</span>
+      </a>
+      <a href="career-info.html" class="app-footer__tab">
+        <span class="app-footer__icon">📺</span>
+        <span class="app-footer__label">Info Karir</span>
+      </a>
+      <a href="career-quiz.html" class="app-footer__tab app-footer__tab--ghost">
+        <span class="app-footer__icon">🎯</span>
+        <span class="app-footer__label">Quiz Karir</span>
+      </a>
+    </div>
+  </footer>
+
+  <script src="mind-planning.js"></script>
+</body>
+</html>
+

@@ -228,11 +228,16 @@ const graphStage = document.getElementById("graphStage");
 const graphCard = document.getElementById("graphCard");
 const resetNodesBtn = document.getElementById("resetNodes");
 const focusRecommendedBtn = document.getElementById("focusRecommended");
+const toggleFullscreenBtn = document.getElementById("toggleFullscreen");
 const particleCanvas = document.getElementById("particleCanvas");
 const stepItems = document.querySelectorAll(".steps__item");
 const mascot = document.getElementById("cartoonMascot");
 const mascotSpeech = document.getElementById("mascotSpeech");
 const mascotPupils = document.querySelectorAll(".pupil");
+const graphInfoPanel = document.getElementById("graphInfoPanel");
+const graphInfoContent = document.getElementById("graphInfoContent");
+const graphInfoPlaceholder = document.getElementById("graphInfoPlaceholder");
+const graphAnalyzeOverlay = document.getElementById("graphAnalyzeOverlay");
 const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
 
 const WORLD_WIDTH = 1800;
@@ -562,7 +567,11 @@ function bindNodeEvents(group, node) {
 
   group.addEventListener("pointermove", (event) => {
     if (state.activeDragId !== node.id) {
-      moveTooltip(event);
+      if (!isTouchDevice) {
+        updateInfoPanel(node);
+      } else {
+        moveTooltip(event);
+      }
       return;
     }
     const point = screenToWorld(event.clientX, event.clientY);
@@ -611,9 +620,11 @@ function bindNodeEvents(group, node) {
   });
 
   if (!isTouchDevice) {
-    group.addEventListener("pointerenter", () => {
+    group.addEventListener("pointerenter", (event) => {
       highlightConnections(node.id);
       group.classList.add("highlight");
+      updateInfoPanel(node);
+      hideTooltip();
     });
 
     group.addEventListener("pointerleave", () => {
@@ -623,7 +634,30 @@ function bindNodeEvents(group, node) {
   }
 }
 
+function updateInfoPanel(node) {
+  if (!graphInfoPanel || !graphInfoContent || !graphInfoPlaceholder) {
+    return;
+  }
+  graphInfoPlaceholder.classList.add("hidden");
+  graphInfoContent.innerHTML = `
+    <div class="graph-info__name">${node.name}</div>
+    <div><strong>Level:</strong> ${node.level}</div>
+    <div><strong>Perkiraan gaji awal:</strong> ${node.salary}</div>
+    <div><strong>Jurusan yang cocok:</strong> ${node.major.join(", ")}</div>
+    <div><strong>Skill utama:</strong> ${node.skills}</div>
+    <div><strong>Persiapan dari SMK:</strong> ${node.education}</div>
+    <div><strong>Profil singkat:</strong> ${node.profile}</div>
+    <div><strong>Jenjang karir:</strong> ${node.track}</div>
+  `;
+}
+
 function showTooltip(event, node) {
+  if (!isTouchDevice) {
+    if (node) {
+      updateInfoPanel(node);
+    }
+    return;
+  }
   tooltip.innerHTML = `
     <div class="title">${node.name}</div>
     <div><strong>Level:</strong> ${node.level}</div>
@@ -665,6 +699,30 @@ function moveTooltip(event) {
 
 function hideTooltip() {
   tooltip.classList.add("hidden");
+}
+
+function isFullscreenActive() {
+  return Boolean(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+}
+
+function enterFullscreen(element) {
+  if (element.requestFullscreen) {
+    element.requestFullscreen();
+  } else if (element.webkitRequestFullscreen) {
+    element.webkitRequestFullscreen();
+  } else if (element.msRequestFullscreen) {
+    element.msRequestFullscreen();
+  }
+}
+
+function exitFullscreen() {
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.webkitExitFullscreen) {
+    document.webkitExitFullscreen();
+  } else if (document.msExitFullscreen) {
+    document.msExitFullscreen();
+  }
 }
 
 function clamp(value, min, max) {
@@ -711,6 +769,9 @@ function flashRecommendedNodes() {
 }
 
 function runSubmitFlow(studentName, classroom, major, hobby) {
+  if (graphAnalyzeOverlay) {
+    graphAnalyzeOverlay.classList.add("hidden");
+  }
   const recommendations = getRecommendations(major, hobby);
   state.selectedCareerIds = recommendations.map((career) => career.id);
   updatePositions();
@@ -822,10 +883,13 @@ studentForm.addEventListener("submit", (event) => {
   const hobby = document.getElementById("hobby").value.trim();
 
   setStepsPhase("analyze");
+  if (graphAnalyzeOverlay) {
+    graphAnalyzeOverlay.classList.remove("hidden");
+  }
   submitBtn.disabled = true;
   submitBtn.classList.add("is-loading");
 
-  const delay = prefersReducedMotion() ? 0 : 520;
+  const delay = prefersReducedMotion() ? 0 : 4000;
   window.setTimeout(() => {
     runSubmitFlow(studentName, classroom, major, hobby);
     submitBtn.disabled = false;
@@ -858,6 +922,30 @@ focusRecommendedBtn.addEventListener("click", () => {
   flashRecommendedNodes();
   focusRecommendedCluster();
 });
+
+if (toggleFullscreenBtn && graphCard) {
+  toggleFullscreenBtn.addEventListener("click", () => {
+    if (!isFullscreenActive()) {
+      enterFullscreen(graphCard);
+    } else {
+      exitFullscreen();
+    }
+  });
+
+  const syncFullscreenState = () => {
+    const active = isFullscreenActive();
+    graphCard.classList.toggle("graph-card--fullscreen", active);
+    if (active) {
+      toggleFullscreenBtn.textContent = "✖ Keluar layar penuh";
+    } else {
+      toggleFullscreenBtn.textContent = "⛶ Layar penuh";
+    }
+  };
+
+  document.addEventListener("fullscreenchange", syncFullscreenState);
+  document.addEventListener("webkitfullscreenchange", syncFullscreenState);
+  document.addEventListener("msfullscreenchange", syncFullscreenState);
+}
 
 graphStage.addEventListener("pointerdown", (event) => {
   if (state.activeNodePointerId) {
