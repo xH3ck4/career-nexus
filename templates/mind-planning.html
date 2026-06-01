@@ -5,18 +5,22 @@
 {% block content %}
   <main class="page mind-page">
     <header class="hero mind-hero">
-      <p class="badge badge--pulse">Mind Planning Karir</p>
+      <p class="badge badge--pulse">Perencana Roadmap Karir</p>
       <h1>
         <span class="hero-title">Rancang Langkah Menuju</span>
         <span class="hero-title hero-title--accent">Karir Impianmu</span>
       </h1>
       <p class="subtitle">
-        Susun alur dari <strong>lulus SMK</strong> sampai <strong>karir tujuan</strong>. Geser kartu, ikuti panah,
-        lalu catat rencana aksi kecil yang bisa kamu mulai hari ini.
+        Susun alur dari <strong>lulus SMK</strong> sampai <strong>karir tujuan</strong>. Tandai status tiap langkah,
+        centang aksi nyatanya, dan pantau kemajuanmu — semua otomatis tersimpan di perangkatmu.
       </p>
+      <ol class="mind-howto" aria-label="Cara memakai">
+        <li><span class="mind-howto__num">1</span> Pilih jalur sesuai jurusanmu</li>
+        <li><span class="mind-howto__num">2</span> Klik kartu langkah untuk lihat detail</li>
+        <li><span class="mind-howto__num">3</span> Tandai status &amp; centang aksinya</li>
+      </ol>
       <div class="mind-hero-actions">
         <a href="{{ url_for('index') }}" class="btn-outline">← Kembali ke Peta Karir</a>
-        <button type="button" class="btn-outline btn-outline--ghost" id="resetMindMap">Reset posisi mind map</button>
       </div>
     </header>
 
@@ -24,19 +28,44 @@
       <article class="card mind-card">
         <div class="mind-toolbar">
           <div class="mind-toolbar__group">
-            <span class="mind-toolbar__label">Template jalur</span>
-            <select id="mindTemplateSelect">
+            <span class="mind-toolbar__label">Jalur</span>
+            <select id="mindTemplateSelect" aria-label="Pilih template jalur karir">
               <option value="webdev">Web Developer / RPL</option>
-              <option value="design">Desain & UI/UX</option>
-              <option value="network">Jaringan & Cybersecurity</option>
-              <option value="finance">Akuntansi & Keuangan</option>
+              <option value="design">Desain &amp; UI/UX</option>
+              <option value="network">Jaringan &amp; Cybersecurity</option>
+              <option value="finance">Akuntansi &amp; Keuangan</option>
+              <option value="business">Bisnis &amp; Pemasaran Digital</option>
             </select>
           </div>
-          <div class="mind-toolbar__group mind-toolbar__group--hint">
-            <span>Tips: klik kartu untuk menandai langkah yang sedang kamu fokuskan.</span>
+
+          <div class="mind-toolbar__group mind-zoom" role="group" aria-label="Kontrol zoom">
+            <button type="button" class="mind-zoom__btn" id="mindZoomOut" aria-label="Perkecil">−</button>
+            <span class="mind-zoom__label" id="mindZoomLabel">100%</span>
+            <button type="button" class="mind-zoom__btn" id="mindZoomIn" aria-label="Perbesar">+</button>
+            <button type="button" class="mind-zoom__btn mind-zoom__btn--fit" id="mindZoomFit" title="Paskan ke layar">⤢</button>
           </div>
-          <div class="mind-toolbar__group">
-            <button type="button" class="btn-outline btn-outline--ghost" id="mindFullscreenToggle">⛶ Layar penuh mind map</button>
+
+          <div class="mind-toolbar__group mind-toolbar__group--actions">
+            <button type="button" class="btn-outline btn-outline--ghost" id="resetMindMap">↺ Posisi</button>
+            <button type="button" class="btn-outline btn-outline--ghost" id="resetMindProgress">🗑 Progress</button>
+            <button type="button" class="btn-outline" id="exportMindPlan">⬇ Ekspor rencana</button>
+            <button type="button" class="btn-outline btn-outline--ghost" id="mindFullscreenToggle">⛶ Layar penuh</button>
+          </div>
+        </div>
+
+        <div class="mind-progress" aria-label="Progress roadmap">
+          <div class="mind-progress__head">
+            <span class="mind-progress__title">Progress Roadmap</span>
+            <span class="mind-progress__percent" id="mindProgressPercent">0%</span>
+          </div>
+          <div class="mind-progress__bar"><span class="mind-progress__fill" id="mindProgressFill"></span></div>
+          <div class="mind-progress__foot">
+            <span id="mindProgressText">0 dari 0 langkah selesai</span>
+            <span class="mind-legend">
+              <span class="mind-legend__item"><span class="mind-legend__dot mind-legend__dot--todo"></span>Belum</span>
+              <span class="mind-legend__item"><span class="mind-legend__dot mind-legend__dot--doing"></span>Sedang</span>
+              <span class="mind-legend__item"><span class="mind-legend__dot mind-legend__dot--done"></span>Selesai</span>
+            </span>
           </div>
         </div>
 
@@ -48,14 +77,41 @@
             </div>
           </div>
 
-          <aside class="mind-notes" aria-live="polite">
-            <h2 class="mind-notes__title">Catatan Aksi Kecil</h2>
-            <p class="mind-notes__hint">
-              Pilih salah satu kartu langkah, lalu tuliskan 2–3 aksi konkret yang bisa kamu mulai dalam 1–4 minggu ke depan.
-            </p>
-            <div class="mind-notes__current" id="mindCurrentStep">Belum ada langkah yang dipilih.</div>
-            <textarea id="mindNotesInput" class="mind-notes__input" placeholder="- Contoh: Cari info beasiswa kampus negeri&#10;- Contoh: Tanya guru BK tentang jurusan yang cocok"></textarea>
-            <p class="mind-notes__small">Catatan ini hanya tersimpan di browser perangkatmu.</p>
+          <aside class="mind-detail" aria-live="polite">
+            <div class="mind-detail__empty" id="mindDetailEmpty">
+              <span class="mind-detail__empty-icon" aria-hidden="true">🗺️</span>
+              <p class="mind-detail__empty-title">Pilih sebuah langkah</p>
+              <p class="mind-detail__empty-text">Klik salah satu kartu pada roadmap untuk melihat detail, menandai status, dan mencatat rencana aksimu.</p>
+            </div>
+
+            <div class="mind-detail__body" id="mindDetailBody" hidden>
+              <div class="mind-detail__header">
+                <span class="mind-detail__icon" id="mindDetailIcon" aria-hidden="true">📍</span>
+                <h2 class="mind-detail__title" id="mindDetailTitle">Langkah</h2>
+              </div>
+              <p class="mind-detail__desc" id="mindDetailDesc"></p>
+
+              <div class="mind-detail__section">
+                <span class="mind-detail__label">Status langkah</span>
+                <div class="mind-status" role="group" aria-label="Ubah status langkah">
+                  <button type="button" class="mind-status-btn" data-status="todo"><span>⚪</span> Belum</button>
+                  <button type="button" class="mind-status-btn" data-status="doing"><span>🟡</span> Sedang</button>
+                  <button type="button" class="mind-status-btn" data-status="done"><span>✅</span> Selesai</button>
+                </div>
+              </div>
+
+              <div class="mind-detail__section">
+                <span class="mind-detail__label">Checklist aksi</span>
+                <ul class="mind-checklist" id="mindChecklist"></ul>
+              </div>
+
+              <div class="mind-detail__section">
+                <span class="mind-detail__label">Catatan pribadi</span>
+                <textarea id="mindDetailNotes" class="mind-detail__notes" placeholder="Tulis rencana aksi atau catatanmu untuk langkah ini…"></textarea>
+              </div>
+
+              <p class="mind-detail__small">Tersimpan otomatis di browser perangkatmu.</p>
+            </div>
           </aside>
         </div>
       </article>

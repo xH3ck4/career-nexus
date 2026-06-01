@@ -353,6 +353,45 @@ function renderMaturity() {
   });
 }
 
+function getRecommendation(strongestArea) {
+  switch (strongestArea) {
+    case "design":
+      return {
+        message: "Kamu tampak kuat di sisi desain dan kreativitas visual.",
+        tags: ["UI/UX Designer", "Graphic Designer", "Motion Designer"]
+      };
+    case "business":
+      return {
+        message: "Kamu nyaman di ranah bisnis, komunikasi, dan pengelolaan produk.",
+        tags: ["Digital Marketer", "Content Strategist", "Product Manager (lanjutan)"]
+      };
+    case "finance":
+      return {
+        message: "Kamu teliti, senang angka dan aturan, cocok di jalur keuangan.",
+        tags: ["Accounting Staff", "Tax & Payroll Admin", "Finance Analyst (lanjutan)"]
+      };
+    case "infra":
+      return {
+        message: "Kamu tertarik dengan sistem dan infrastruktur teknologi.",
+        tags: ["Network Technician", "Cybersecurity Analyst", "Cloud Engineer"]
+      };
+    default:
+      return {
+        message: "Jawabanmu banyak mengarah ke dunia teknologi dan pengembangan software.",
+        tags: ["Frontend/Backend Developer", "QA Engineer", "Cloud Engineer"]
+      };
+  }
+}
+
+function getMaturityInfo() {
+  const percent = quizState.maturityMax > 0 ? Math.round((quizState.maturity / quizState.maturityMax) * 100) : 0;
+  let label;
+  if (percent < 40) label = "Tahap Awal";
+  else if (percent < 70) label = "Tahap Berkembang";
+  else label = "Tahap Matang";
+  return { percent, label };
+}
+
 function showFinalResult() {
   computeScores();
   const entries = Object.entries(quizState.scores);
@@ -366,25 +405,9 @@ function showFinalResult() {
   quizScoreValue.classList.add("quiz-score-circle__inner--pulse");
 
   let strongestArea = entries.find(([, s]) => s === maxScore)?.[0] || "tech";
-  let message = "";
-  const tags = [];
+  const { message, tags } = getRecommendation(strongestArea);
 
-  if (strongestArea === "tech") {
-    message = "Jawabanmu banyak mengarah ke dunia teknologi dan pengembangan software.";
-    tags.push("Frontend/Backend Developer", "QA Engineer", "Cloud Engineer");
-  } else if (strongestArea === "design") {
-    message = "Kamu tampak kuat di sisi desain dan kreativitas visual.";
-    tags.push("UI/UX Designer", "Graphic Designer", "Motion Designer");
-  } else if (strongestArea === "business") {
-    message = "Kamu nyaman di ranah bisnis, komunikasi, dan pengelolaan produk.";
-    tags.push("Digital Marketer", "Content Strategist", "Product Manager (lanjutan)");
-  } else if (strongestArea === "finance") {
-    message = "Kamu teliti, senang angka dan aturan, cocok di jalur keuangan.";
-    tags.push("Accounting Staff", "Tax & Payroll Admin", "Finance Analyst (lanjutan)");
-  } else {
-    message = "Kamu tertarik dengan sistem dan infrastruktur teknologi.";
-    tags.push("Network Technician", "Cybersecurity Analyst", "Cloud Engineer");
-  }
+  quizState.result = { scorePercent: percent, maxScore, strongestArea, message, tags };
 
   quizResultText.textContent = `${message} Skor tertinggi: ${maxScore} poin.`;
   quizResultTags.innerHTML = "";
@@ -396,6 +419,276 @@ function showFinalResult() {
 
   renderAreas();
   renderMaturity();
+}
+
+/* ---------- Unduh hasil quiz sebagai gambar (Canvas, tanpa library) ---------- */
+function wrapText(ctx, text, maxWidth) {
+  const words = String(text).split(/\s+/);
+  const lines = [];
+  let line = "";
+  for (const word of words) {
+    const test = line ? `${line} ${word}` : word;
+    if (ctx.measureText(test).width > maxWidth && line) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = test;
+    }
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
+function roundRectPath(ctx, x, y, w, h, r) {
+  const radius = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.arcTo(x + w, y, x + w, y + h, radius);
+  ctx.arcTo(x + w, y + h, x, y + h, radius);
+  ctx.arcTo(x, y + h, x, y, radius);
+  ctx.arcTo(x, y, x + w, y, radius);
+  ctx.closePath();
+}
+
+const QUIZ_IMG = { W: 760, PAD: 48 };
+
+/* Menggambar isi kartu (tanpa latar). Return posisi y akhir untuk hitung tinggi. */
+function drawResultContent(ctx, draw) {
+  const { W, PAD } = QUIZ_IMG;
+  const innerW = W - PAD * 2;
+  const result = quizState.result || { scorePercent: 0, maxScore: 0, strongestArea: "tech", message: "", tags: [] };
+  let y = 52;
+
+  const accent = "#5ae8ff";
+  const accent2 = "#9b8cff";
+  const success = "#6dffc4";
+  const textMain = "#eaf1ff";
+  const textSoft = "#9fb2d8";
+
+  if (draw) {
+    // Brand
+    ctx.fillStyle = accent;
+    ctx.beginPath();
+    ctx.arc(PAD + 8, y - 4, 8, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.font = "700 20px 'Segoe UI', system-ui, sans-serif";
+    ctx.textBaseline = "alphabetic";
+    ctx.fillStyle = textMain;
+    ctx.fillText("Career Nexus", PAD + 26, y + 2);
+    ctx.font = "600 13px 'Segoe UI', system-ui, sans-serif";
+    ctx.fillStyle = textSoft;
+    ctx.textAlign = "right";
+    ctx.fillText("HASIL QUIZ KARIR", W - PAD, y + 1);
+    ctx.textAlign = "left";
+  }
+  y += 40;
+
+  // Title
+  if (draw) {
+    ctx.font = "800 30px 'Segoe UI', system-ui, sans-serif";
+    ctx.fillStyle = textMain;
+    ctx.fillText("Rekomendasi Karirmu", PAD, y + 8);
+  }
+  y += 46;
+
+  // Score circle + label
+  const circleR = 44;
+  const cx = PAD + circleR;
+  const cy = y + circleR;
+  if (draw) {
+    ctx.lineWidth = 8;
+    ctx.strokeStyle = "rgba(90,232,255,0.2)";
+    ctx.beginPath();
+    ctx.arc(cx, cy, circleR, 0, Math.PI * 2);
+    ctx.stroke();
+    const pct = Math.max(0, Math.min(100, result.scorePercent));
+    ctx.strokeStyle = accent;
+    ctx.beginPath();
+    ctx.arc(cx, cy, circleR, -Math.PI / 2, -Math.PI / 2 + (Math.PI * 2 * pct) / 100);
+    ctx.stroke();
+    ctx.fillStyle = textMain;
+    ctx.font = "800 26px 'Segoe UI', system-ui, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(`${pct}%`, cx, cy + 9);
+    ctx.textAlign = "left";
+
+    const tx = PAD + circleR * 2 + 22;
+    ctx.fillStyle = textSoft;
+    ctx.font = "600 13px 'Segoe UI', system-ui, sans-serif";
+    ctx.fillText("SKOR KECOCOKAN TERTINGGI", tx, cy - 14);
+    ctx.fillStyle = accent;
+    ctx.font = "800 22px 'Segoe UI', system-ui, sans-serif";
+    ctx.fillText(AREA_LABELS[result.strongestArea] || "Teknologi", tx, cy + 14);
+  }
+  y += circleR * 2 + 24;
+
+  // Recommendation message
+  ctx.font = "400 16px 'Segoe UI', system-ui, sans-serif";
+  const msgLines = wrapText(ctx, result.message, innerW);
+  if (draw) {
+    ctx.fillStyle = textMain;
+    msgLines.forEach((ln, i) => ctx.fillText(ln, PAD, y + 16 + i * 24));
+  }
+  y += msgLines.length * 24 + 18;
+
+  // Section: profesi (tags)
+  if (draw) {
+    ctx.font = "700 13px 'Segoe UI', system-ui, sans-serif";
+    ctx.fillStyle = accent2;
+    ctx.fillText("REKOMENDASI PROFESI", PAD, y + 12);
+  }
+  y += 26;
+  ctx.font = "600 14px 'Segoe UI', system-ui, sans-serif";
+  let px = PAD;
+  let py = y;
+  const pillH = 30;
+  const gap = 10;
+  (result.tags || []).forEach((tag) => {
+    const tw = ctx.measureText(tag).width;
+    const pw = tw + 26;
+    if (px + pw > PAD + innerW) {
+      px = PAD;
+      py += pillH + gap;
+    }
+    if (draw) {
+      ctx.fillStyle = "rgba(155,140,255,0.16)";
+      roundRectPath(ctx, px, py, pw, pillH, 15);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(155,140,255,0.5)";
+      ctx.lineWidth = 1;
+      roundRectPath(ctx, px, py, pw, pillH, 15);
+      ctx.stroke();
+      ctx.fillStyle = "#d9d3ff";
+      ctx.fillText(tag, px + 13, py + 20);
+    }
+    px += pw + gap;
+  });
+  y = py + pillH + 24;
+
+  // Section: peta minat per bidang
+  if (draw) {
+    ctx.font = "700 13px 'Segoe UI', system-ui, sans-serif";
+    ctx.fillStyle = accent2;
+    ctx.fillText("PETA MINAT PER BIDANG", PAD, y + 12);
+  }
+  y += 28;
+  const maxScore = Math.max(1, ...QUIZ_AREAS.map((a) => quizState.scores[a] || 0));
+  const sortedAreas = QUIZ_AREAS.slice().sort((a, b) => (quizState.scores[b] || 0) - (quizState.scores[a] || 0));
+  sortedAreas.forEach((area) => {
+    const score = quizState.scores[area] || 0;
+    const pct = Math.round((score / maxScore) * 100);
+    if (draw) {
+      ctx.font = "600 14px 'Segoe UI', system-ui, sans-serif";
+      ctx.fillStyle = textMain;
+      ctx.fillText(AREA_LABELS[area], PAD, y + 12);
+      ctx.fillStyle = textSoft;
+      ctx.textAlign = "right";
+      ctx.fillText(`${score} poin`, PAD + innerW, y + 12);
+      ctx.textAlign = "left";
+      // track
+      ctx.fillStyle = "rgba(120,150,230,0.16)";
+      roundRectPath(ctx, PAD, y + 20, innerW, 9, 5);
+      ctx.fill();
+      // fill
+      const grad = ctx.createLinearGradient(PAD, 0, PAD + innerW, 0);
+      grad.addColorStop(0, accent);
+      grad.addColorStop(1, accent2);
+      ctx.fillStyle = grad;
+      roundRectPath(ctx, PAD, y + 20, Math.max(8, (innerW * pct) / 100), 9, 5);
+      ctx.fill();
+    }
+    y += 40;
+  });
+  y += 6;
+
+  // Section: kematangan karier
+  const mat = getMaturityInfo();
+  if (draw) {
+    ctx.font = "700 13px 'Segoe UI', system-ui, sans-serif";
+    ctx.fillStyle = accent2;
+    ctx.fillText("KEMATANGAN KARIER", PAD, y + 12);
+    ctx.font = "800 16px 'Segoe UI', system-ui, sans-serif";
+    ctx.fillStyle = success;
+    ctx.textAlign = "right";
+    ctx.fillText(`${mat.label} · ${mat.percent}%`, PAD + innerW, y + 12);
+    ctx.textAlign = "left";
+    ctx.fillStyle = "rgba(120,150,230,0.16)";
+    roundRectPath(ctx, PAD, y + 22, innerW, 10, 5);
+    ctx.fill();
+    const grad = ctx.createLinearGradient(PAD, 0, PAD + innerW, 0);
+    grad.addColorStop(0, accent);
+    grad.addColorStop(1, success);
+    ctx.fillStyle = grad;
+    roundRectPath(ctx, PAD, y + 22, Math.max(8, (innerW * mat.percent) / 100), 10, 5);
+    ctx.fill();
+  }
+  y += 50;
+
+  // Footer
+  if (draw) {
+    ctx.strokeStyle = "rgba(120,150,230,0.2)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(PAD, y);
+    ctx.lineTo(PAD + innerW, y);
+    ctx.stroke();
+    const tanggal = new Date().toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+    ctx.font = "400 12px 'Segoe UI', system-ui, sans-serif";
+    ctx.fillStyle = textSoft;
+    ctx.fillText(`Dibuat ${tanggal} • Career Nexus — CyberCounseling SMK`, PAD, y + 22);
+  }
+  y += 36;
+
+  return y;
+}
+
+function downloadResultImage() {
+  const scale = 2;
+  const { W } = QUIZ_IMG;
+
+  // 1) Measure pass untuk menghitung tinggi konten.
+  const measureCanvas = document.createElement("canvas");
+  measureCanvas.width = W;
+  measureCanvas.height = 10;
+  const mctx = measureCanvas.getContext("2d");
+  const contentHeight = drawResultContent(mctx, false);
+  const H = Math.ceil(contentHeight + 8);
+
+  // 2) Canvas final (retina) + latar.
+  const canvas = document.createElement("canvas");
+  canvas.width = W * scale;
+  canvas.height = H * scale;
+  const ctx = canvas.getContext("2d");
+  ctx.scale(scale, scale);
+
+  const bg = ctx.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0, "#0c1633");
+  bg.addColorStop(1, "#0a0f22");
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  // Aksen lengkung di pojok atas
+  const glow = ctx.createRadialGradient(W, 0, 0, W, 0, 360);
+  glow.addColorStop(0, "rgba(90,232,255,0.18)");
+  glow.addColorStop(1, "rgba(90,232,255,0)");
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, W, 360);
+
+  // Garis aksen atas
+  const top = ctx.createLinearGradient(0, 0, W, 0);
+  top.addColorStop(0, "#5ae8ff");
+  top.addColorStop(1, "#9b8cff");
+  ctx.fillStyle = top;
+  ctx.fillRect(0, 0, W, 5);
+
+  drawResultContent(ctx, true);
+
+  const link = document.createElement("a");
+  link.download = "hasil-quiz-karir.png";
+  link.href = canvas.toDataURL("image/png");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
 function initQuizPage() {
@@ -443,12 +736,20 @@ function initQuizPage() {
       const answered = Object.keys(quizState.answers).length;
       if (answered < QUIZ_QUESTIONS.length) {
         quizSaveBtn.textContent = "⚠️ Selesaikan dulu";
-        window.setTimeout(() => (quizSaveBtn.textContent = "💾 Simpan Hasil"), 1800);
+        window.setTimeout(() => (quizSaveBtn.textContent = "🖼️ Simpan Hasil (Gambar)"), 1800);
         return;
       }
+      if (!quizState.result) {
+        showFinalResult();
+      }
       persistAnswers();
-      quizSaveBtn.textContent = "✅ Tersimpan!";
-      window.setTimeout(() => (quizSaveBtn.textContent = "💾 Simpan Hasil"), 1800);
+      try {
+        downloadResultImage();
+        quizSaveBtn.textContent = "✅ Gambar diunduh!";
+      } catch {
+        quizSaveBtn.textContent = "⚠️ Gagal mengunduh";
+      }
+      window.setTimeout(() => (quizSaveBtn.textContent = "🖼️ Simpan Hasil (Gambar)"), 1800);
     });
   }
 }
