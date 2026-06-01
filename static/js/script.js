@@ -231,9 +231,6 @@ const focusRecommendedBtn = document.getElementById("focusRecommended");
 const toggleFullscreenBtn = document.getElementById("toggleFullscreen");
 const particleCanvas = document.getElementById("particleCanvas");
 const stepItems = document.querySelectorAll(".steps__item");
-const mascot = document.getElementById("cartoonMascot");
-const mascotSpeech = document.getElementById("mascotSpeech");
-const mascotPupils = document.querySelectorAll(".pupil");
 const graphInfoPanel = document.getElementById("graphInfoPanel");
 const graphInfoContent = document.getElementById("graphInfoContent");
 const graphInfoPlaceholder = document.getElementById("graphInfoPlaceholder");
@@ -808,58 +805,9 @@ function runSubmitFlow(studentName, classroom, major, hobby) {
 }
 
 function setMascotSpeech(text) {
-  if (!mascotSpeech) {
-    return;
+  if (window.Nexi && typeof window.Nexi.say === "function") {
+    window.Nexi.say(text);
   }
-  mascotSpeech.textContent = text;
-}
-
-function setupMascotInteractions() {
-  if (!mascot || mascotPupils.length === 0) {
-    return;
-  }
-
-  const moveEyes = (clientX, clientY) => {
-    for (const pupil of mascotPupils) {
-      const eye = pupil.parentElement;
-      if (!eye) {
-        continue;
-      }
-      const rect = eye.getBoundingClientRect();
-      const dx = clientX - (rect.left + rect.width / 2);
-      const dy = clientY - (rect.top + rect.height / 2);
-      const distance = Math.hypot(dx, dy) || 1;
-      const maxMove = 5;
-      const tx = (dx / distance) * Math.min(maxMove, distance * 0.22);
-      const ty = (dy / distance) * Math.min(maxMove, distance * 0.22);
-      pupil.style.transform = `translate(${tx}px, ${ty}px)`;
-    }
-  };
-
-  document.addEventListener("pointermove", (event) => {
-    moveEyes(event.clientX, event.clientY);
-  });
-
-  mascot.addEventListener("click", () => {
-    mascot.classList.remove("mascot-pop");
-    void mascot.offsetWidth;
-    mascot.classList.add("mascot-pop");
-    setMascotSpeech("Hehe! Klik aku lagi kalau mau semangat belajar karir 💫");
-  });
-
-  const interactiveTips = [
-    "Tips: Hover node untuk lihat info detail profesi 👀",
-    "Tips: Drag peta dan zoom untuk eksplor jalur karir 🔍",
-    "Tips: Isi hobi spesifik biar rekomendasi makin akurat 🎯"
-  ];
-  let tipIndex = 0;
-  window.setInterval(() => {
-    if (!mascotSpeech || !resultCard.classList.contains("hidden")) {
-      return;
-    }
-    tipIndex = (tipIndex + 1) % interactiveTips.length;
-    setMascotSpeech(interactiveTips[tipIndex]);
-  }, 6000);
 }
 
 function focusRecommendedCluster() {
@@ -1232,4 +1180,3 @@ window.matchMedia("(prefers-reduced-motion: reduce)").addEventListener("change",
 setStepsPhase("form");
 renderGraph();
 initParticles();
-setupMascotInteractions();

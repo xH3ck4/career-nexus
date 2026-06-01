@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>(function(){try{var t=localStorage.getItem('cn-theme');document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}catch(e){document.documentElement.setAttribute('data-theme','light');}})();</script>
+  <title>{% block title %}Career Nexus{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body>
+  <div class="ambient" aria-hidden="true">
+    <canvas id="particleCanvas" class="particle-canvas"></canvas>
+    <div class="orb orb--1"></div>
+    <div class="orb orb--2"></div>
+    <div class="orb orb--3"></div>
+    <div class="grid-floor"></div>
+  </div>
+  <div class="background-glow"></div>
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <header class="app-header">
+    <div class="app-header__accent" aria-hidden="true"></div>
+    <div class="app-header__inner">
+      <a class="app-header__brand" href="{{ url_for('index') }}" aria-label="Career Nexus - beranda">
+        <span class="app-header__logo" aria-hidden="true">
+          <span class="app-header__logo-dot"></span>
+        </span>
+        <span class="app-header__brand-text">
+          <span class="app-header__title">Career Nexus</span>
+          <span class="app-header__subtitle">CyberCounseling SMK</span>
+        </span>
+      </a>
+      <nav class="app-header__nav" aria-label="Navigasi utama">
+        <a href="{{ url_for('index') }}" class="app-header__link{% if active == 'peta' %} app-header__link--active{% endif %}">
+          <span class="app-header__link-icon" aria-hidden="true">🌐</span>
+          <span class="app-header__link-text">Peta Karir</span>
+        </a>
+        <a href="{{ url_for('mind_planning') }}" class="app-header__link{% if active == 'mind' %} app-header__link--active{% endif %}">
+          <span class="app-header__link-icon" aria-hidden="true">🧠</span>
+          <span class="app-header__link-text">Mind Planning</span>
+        </a>
+        <a href="{{ url_for('career_info') }}" class="app-header__link{% if active == 'info' %} app-header__link--active{% endif %}">
+          <span class="app-header__link-icon" aria-hidden="true">📺</span>
+          <span class="app-header__link-text">Info Karir</span>
+        </a>
+        <a href="{{ url_for('career_quiz') }}" class="app-header__link{% if active == 'quiz' %} app-header__link--active{% endif %}">
+          <span class="app-header__link-icon" aria-hidden="true">🎯</span>
+          <span class="app-header__link-text">Quiz Karir</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  {% block content %}{% endblock %}
+
+  <footer class="app-footer">
+    <div class="app-footer__tabs app-footer__tabs--four" aria-label="Navigasi bawah">
+      <a href="{{ url_for('index') }}" class="app-footer__tab{% if active == 'peta' %} app-footer__tab--active{% endif %}">
+        <span class="app-footer__icon">🌐</span>
+        <span class="app-footer__label">Peta Karir</span>
+      </a>
+      <a href="{{ url_for('mind_planning') }}" class="app-footer__tab{% if active == 'mind' %} app-footer__tab--active{% endif %}">
+        <span class="app-footer__icon">🧠</span>
+        <span class="app-footer__label">Mind Planning</span>
+      </a>
+      <a href="{{ url_for('career_info') }}" class="app-footer__tab{% if active == 'info' %} app-footer__tab--active{% endif %}">
+        <span class="app-footer__icon">📺</span>
+        <span class="app-footer__label">Info Karir</span>
+      </a>
+      <a href="{{ url_for('career_quiz') }}" class="app-footer__tab{% if active == 'quiz' %} app-footer__tab--active{% else %} app-footer__tab--ghost{% endif %}">
+        <span class="app-footer__icon">🎯</span>
+        <span class="app-footer__label">Quiz Karir</span>
+      </a>
+    </div>
+  </footer>
+
+  <!-- Nexi: Asisten Karir Virtual (global) -->
+  <div class="nexi" id="nexiWidget" data-open="false">
+    <section class="nexi-panel" id="nexiPanel" role="dialog" aria-label="Nexi - Asisten Karir Virtual">
+      <header class="nexi-panel__head">
+        <div class="nexi-panel__id">
+          <span class="nexi-panel__avatar" aria-hidden="true">
+            <span class="nexi-mini-eye"></span><span class="nexi-mini-eye"></span>
+          </span>
+          <div class="nexi-panel__meta">
+            <p class="nexi-panel__name">Nexi <span class="nexi-status">online</span></p>
+            <p class="nexi-panel__role">Asisten Karir Virtual</p>
+          </div>
+        </div>
+        <button type="button" class="nexi-panel__close" id="nexiClose" aria-label="Tutup obrolan">✕</button>
+      </header>
+      <div class="nexi-panel__body" id="nexiMessages" role="log" aria-live="polite"></div>
+      <div class="nexi-suggest" id="nexiSuggest" aria-label="Saran pertanyaan"></div>
+      <form class="nexi-form" id="nexiForm" autocomplete="off">
+        <input type="text" id="nexiInput" class="nexi-input" placeholder="Tanya soal karir, jurusan, skill…" aria-label="Tulis pesan untuk Nexi" />
+        <button type="submit" class="nexi-send" aria-label="Kirim pesan">➤</button>
+      </form>
+      <p class="nexi-disclaimer">Mode demo · jawaban contoh, belum terhubung AI sungguhan.</p>
+    </section>
+
+    <div class="nexi-launcher" id="nexiLauncher" role="button" tabindex="0" aria-label="Buka asisten karir Nexi" aria-expanded="false">
+      <span class="nexi-teaser" id="nexiTeaser">Hai! Tanya aku soal karir ya ✨</span>
+      <span class="cartoon-mascot" id="cartoonMascot" aria-hidden="true">
+        <span class="mascot-antenna"></span>
+        <span class="mascot-face">
+          <span class="eye eye-left"><span class="pupil"></span></span>
+          <span class="eye eye-right"><span class="pupil"></span></span>
+          <span class="mouth"></span>
+          <span class="blush blush-left"></span>
+          <span class="blush blush-right"></span>
+        </span>
+      </span>
+      <span class="nexi-badge" id="nexiBadge">AI</span>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/assistant.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

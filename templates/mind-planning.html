@@ -1,41 +1,8 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mind Planning Karir - CyberCounseling SMK</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <div class="ambient" aria-hidden="true">
-    <canvas id="particleCanvas" class="particle-canvas"></canvas>
-    <div class="orb orb--1"></div>
-    <div class="orb orb--2"></div>
-    <div class="orb orb--3"></div>
-    <div class="grid-floor"></div>
-  </div>
-  <div class="background-glow"></div>
-  <div class="scanlines" aria-hidden="true"></div>
+{% extends "base.html" %}
 
-  <header class="app-header">
-    <div class="app-header__inner">
-      <div class="app-header__brand">
-        <span class="app-header__logo-dot"></span>
-        <span class="app-header__title">Career Nexus</span>
-        <span class="app-header__subtitle">CyberCounseling SMK</span>
-      </div>
-      <nav class="app-header__nav" aria-label="Navigasi utama">
-        <a href="index.html" class="app-header__link">Peta Karir</a>
-        <a href="mind-planning.html" class="app-header__link app-header__link--active">Mind Planning</a>
-        <a href="career-info.html" class="app-header__link">Info Karir</a>
-        <a href="career-quiz.html" class="app-header__link">Quiz Karir</a>
-      </nav>
-    </div>
-  </header>
+{% block title %}Mind Planning Karir - CyberCounseling SMK{% endblock %}
 
+{% block content %}
   <main class="page mind-page">
     <header class="hero mind-hero">
       <p class="badge badge--pulse">Mind Planning Karir</p>
@@ -48,7 +15,7 @@
         lalu catat rencana aksi kecil yang bisa kamu mulai hari ini.
       </p>
       <div class="mind-hero-actions">
-        <a href="index.html" class="btn-outline">← Kembali ke Peta Karir</a>
+        <a href="{{ url_for('index') }}" class="btn-outline">← Kembali ke Peta Karir</a>
         <button type="button" class="btn-outline btn-outline--ghost" id="resetMindMap">Reset posisi mind map</button>
       </div>
     </header>
@@ -94,29 +61,8 @@
       </article>
     </section>
   </main>
+{% endblock %}
 
-  <footer class="app-footer">
-    <div class="app-footer__tabs app-footer__tabs--four" aria-label="Navigasi bawah">
-      <a href="index.html" class="app-footer__tab">
-        <span class="app-footer__icon">🌐</span>
-        <span class="app-footer__label">Peta Karir</span>
-      </a>
-      <a href="mind-planning.html" class="app-footer__tab app-footer__tab--active">
-        <span class="app-footer__icon">🧠</span>
-        <span class="app-footer__label">Mind Planning</span>
-      </a>
-      <a href="career-info.html" class="app-footer__tab">
-        <span class="app-footer__icon">📺</span>
-        <span class="app-footer__label">Info Karir</span>
-      </a>
-      <a href="career-quiz.html" class="app-footer__tab app-footer__tab--ghost">
-        <span class="app-footer__icon">🎯</span>
-        <span class="app-footer__label">Quiz Karir</span>
-      </a>
-    </div>
-  </footer>
-
-  <script src="mind-planning.js"></script>
-</body>
-</html>
-
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/mind-planning.js') }}"></script>
+{% endblock %}

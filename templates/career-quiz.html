@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Quiz Karir Interaktif - Career Nexus{% endblock %}
+
+{% block content %}
+  <main class="page quiz-page">
+    <header class="hero">
+      <p class="badge badge--pulse">Quiz Karir Interaktif</p>
+      <h1>
+        <span class="hero-title">Tes Minat & Gaya Kerja</span>
+        <span class="hero-title hero-title--accent">Lihat Skor & Rekomendasi</span>
+      </h1>
+      <p class="subtitle">
+        Jawab beberapa pertanyaan pendek. Di akhir, kamu akan melihat <strong>skor kecocokan</strong> dan
+        <strong>jalur karir</strong> yang paling dekat dengan pola jawabanmu.
+      </p>
+    </header>
+
+    <section class="quiz-layout">
+      <article class="card quiz-card">
+        <div class="quiz-progress">
+          <div class="quiz-progress__bar">
+            <div class="quiz-progress__fill" id="quizProgressFill"></div>
+          </div>
+          <span class="quiz-progress__label" id="quizProgressLabel">Pertanyaan 1 dari 6</span>
+        </div>
+
+        <div class="quiz-question" id="quizQuestionText"></div>
+        <div class="quiz-options" id="quizOptions"></div>
+
+        <div class="quiz-actions">
+          <button type="button" class="btn-outline btn-outline--ghost" id="quizPrevBtn">Sebelumnya</button>
+          <button type="button" class="btn-outline" id="quizNextBtn">Berikutnya</button>
+        </div>
+      </article>
+
+      <aside class="quiz-result card" id="quizResultCard" aria-live="polite">
+        <h2>Ringkasan Skor</h2>
+        <div class="quiz-score-circle">
+          <div class="quiz-score-circle__inner" id="quizScoreValue">0</div>
+        </div>
+        <p class="quiz-result-text" id="quizResultText">Jawabanmu akan dianalisis setelah kamu menyelesaikan semua pertanyaan.</p>
+        <ul class="quiz-result-tags" id="quizResultTags"></ul>
+
+        <h3 style="margin:1.1rem 0 0;font-size:0.92rem;color:var(--accent);">Peta Minat per Bidang</h3>
+        <ul class="quiz-areas" id="quizAreas"></ul>
+
+        <div class="maturity-card" id="maturityCard">
+          <h3 style="margin:0;font-size:0.92rem;color:var(--accent);">Indikator Kematangan Karier</h3>
+          <div class="maturity-meter"><span class="maturity-meter__marker" id="maturityMarker"></span></div>
+          <div class="maturity-level" id="maturityLevel">Belum diukur</div>
+          <p class="quiz-result-text" id="maturityText" style="text-align:left;margin:0.3rem 0 0;"></p>
+          <ul class="maturity-checklist" id="maturityChecklist"></ul>
+        </div>
+
+        <div class="quiz-result__actions">
+          <button type="button" class="btn-outline btn-outline--ghost" id="quizRetryBtn">↻ Ulangi Quiz</button>
+          <button type="button" class="btn-outline" id="quizSaveBtn">💾 Simpan Hasil</button>
+        </div>
+      </aside>
+    </section>
+  </main>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/career-quiz.js') }}"></script>
+{% endblock %}

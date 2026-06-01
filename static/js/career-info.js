@@ -6,10 +6,33 @@ const infoRandomBtn = document.getElementById("infoRandomBtn");
 const infoTitle = document.getElementById("infoTitle");
 const infoSubtitle = document.getElementById("infoSubtitle");
 const infoMediaCaption = document.getElementById("infoMediaCaption");
+const infoVideo = document.getElementById("infoVideo");
+const infoVideoActions = document.getElementById("infoVideoActions");
 const infoTags = document.getElementById("infoTags");
 const infoDescription = document.getElementById("infoDescription");
 const infoTips = document.getElementById("infoTips");
 const infoRoadmap = document.getElementById("infoRoadmap");
+
+// Video pengenalan profesi (ID YouTube nyata yang sudah diverifikasi).
+const VIDEO_MAP = {
+  "junior-web": "Cwh2bJBq3hs",
+  "frontend-dev": "Cwh2bJBq3hs",
+  "backend-dev": "Cwh2bJBq3hs",
+  "qa-engineer": "Cwh2bJBq3hs",
+  "tech-lead": "Cwh2bJBq3hs",
+  "network-tech": "KDW9esURtPo",
+  "cloud-engineer": "8iKfiEHTWMk",
+  "cyber-analyst": "pfvHbg8PPy8",
+  "graphic-designer": "J6bIT-y6F4Y",
+  "motion-designer": "J6bIT-y6F4Y",
+  "uiux-designer": "jutTIsf_3dg",
+  "product-designer": "jutTIsf_3dg",
+  "digital-marketer": "aQbZdee5PXI",
+  "content-strategist": "aQbZdee5PXI",
+  "accounting-staff": "X_LeQl2avxo",
+  "tax-admin": "X_LeQl2avxo"
+};
+const DEFAULT_VIDEO_ID = "Cwh2bJBq3hs";
 
 // Jika halaman ini tidak memuat script utama, definisikan ulang data karir minimal
 // agar career-info bisa berdiri sendiri.
@@ -144,11 +167,55 @@ const INFO_DATA = CAREER_DATA.map((career) => {
 
   return {
     ...career,
-    videoCaption: `Simulasi singkat suasana kerja sebagai ${career.name}.`,
+    videoCaption: `Video pengenalan profesi ${career.name}. Tekan play untuk menonton langsung dari YouTube.`,
+    youtubeId: VIDEO_MAP[career.id] || DEFAULT_VIDEO_ID,
+    videoQuery: `mengenal profesi ${career.name} Indonesia`,
     tips: [...tipsBase.slice(0, 3), levelExtra],
     roadmapSteps: career.track.split("->").map((p) => p.trim())
   };
 });
+
+function renderVideo(career) {
+  if (!infoVideo) return;
+  const videoId = career.youtubeId || DEFAULT_VIDEO_ID;
+  const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1&autoplay=1`;
+  const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(career.videoQuery)}`;
+  const watchUrl = `https://www.youtube.com/watch?v=${videoId}`;
+  const thumbUrl = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+  const thumbFallback = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+
+  infoVideo.innerHTML = `
+    <button type="button" class="info-video__poster" aria-label="Putar video ${career.name}">
+      <img class="info-video__thumb" src="${thumbUrl}" alt="Thumbnail video ${career.name}" loading="lazy"
+           referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='${thumbFallback}';" />
+      <span class="info-video__scrim" aria-hidden="true"></span>
+      <span class="info-video__playicon" aria-hidden="true">▶</span>
+      <span class="info-video__poster-text">Tonton video pengenalan ${career.name}</span>
+    </button>
+  `;
+
+  const poster = infoVideo.querySelector(".info-video__poster");
+  if (poster) {
+    poster.addEventListener("click", () => {
+      const iframe = document.createElement("iframe");
+      iframe.src = embedUrl;
+      iframe.title = `Video pengenalan profesi ${career.name}`;
+      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+      iframe.allowFullscreen = true;
+      iframe.loading = "lazy";
+      iframe.referrerPolicy = "strict-origin-when-cross-origin";
+      infoVideo.innerHTML = "";
+      infoVideo.appendChild(iframe);
+    });
+  }
+
+  if (infoVideoActions) {
+    infoVideoActions.innerHTML = `
+      <a class="info-video-link" href="${watchUrl}" target="_blank" rel="noopener noreferrer">▶ Buka di YouTube</a>
+      <a class="info-video-link" style="background:linear-gradient(135deg,#475569,#1e293b);box-shadow:0 8px 18px rgba(30,41,59,0.3)" href="${searchUrl}" target="_blank" rel="noopener noreferrer">🔎 Cari video lain</a>
+    `;
+  }
+}
 
 function initParticlesInfo() {
   if (!particleCanvasInfo || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -234,6 +301,7 @@ function showCareerDetail(id, animate = false) {
   infoTitle.textContent = career.name;
   infoSubtitle.textContent = `${career.profile}`;
   infoMediaCaption.textContent = career.videoCaption;
+  renderVideo(career);
 
   infoTags.innerHTML = `
     <span class="info-tag">${career.level} level</span>
@@ -264,9 +332,11 @@ function showCareerDetail(id, animate = false) {
 
   if (animate) {
     const media = document.querySelector(".info-media");
-    media.classList.remove("info-media--pulse");
-    void media.offsetWidth;
-    media.classList.add("info-media--pulse");
+    if (media) {
+      media.classList.remove("info-media--pulse");
+      void media.offsetWidth;
+      media.classList.add("info-media--pulse");
+    }
   }
 }
 
